@@ -1,3 +1,5 @@
+from neo4j import GraphDatabase
+
 '''
 Requisiti:
     -Rappresentare una zona di montagna e tutti i sentieri disponibili:
@@ -64,6 +66,31 @@ Robe utili:
             A->B->C->D->E->G->A
         -Area Picnic (punto A, B)
 '''
+# Apertura connessione
+uri = "neo4j+s://01ba88fb.databases.neo4j.io"
+username = "neo4j"
+password = "buVwt6t2NoI2ztlIwcCcNaKWBDXwf6ZLzpq_jDAZDWo"
+
+# Collegamento al database tramite le nostre credenziali 
+# La connessione verrà chiusa una volta che verrà terminato il suo utilizzo
+with GraphDatabase.driver(uri, auth=(username, password)) as driver:
+    with driver.session() as session:
+        # Qui andiamo ad eseguire la query
+        result = session.run("CREATE (n:Node)-[:Studente]->(n) RETURN id(n) AS node_id")
+        node_id = result.single()["node_id"]
+        print("ID del nodo:", node_id)
+
+def ping(uri, username, password):
+    try:
+        driver = GraphDatabase.driver(uri, auth=(username, password))
+        with driver.session() as session:
+            result = session.run("RETURN 1")
+            if result.single()[0] == 1:
+                print("Connessione effettuata!")
+            else:
+                print("Connessione fallita!")
+    except Exception as e:
+        print(f"Errore: \n {e}")
 
 def scelta_area():
 
