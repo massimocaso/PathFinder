@@ -67,7 +67,7 @@ Robe utili:
         -Area Picnic (punto A, B)
 '''
 # Apertura connessione
-uri = "neo4j+s://01ba88fb.databases.neo4j.io"
+uri = "neo4j+ssc://01ba88fb.databases.neo4j.io"
 username = "neo4j"
 password = "buVwt6t2NoI2ztlIwcCcNaKWBDXwf6ZLzpq_jDAZDWo"
 
@@ -205,55 +205,71 @@ def create_node(uri, username, password):
 
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (a:point), (b:point) WHERE a.name = 'A' AND b.name = 'B' CREATE (a)-[r:path {length: 2}]-> (b) RETURN a, b")
+            result = session.run("MATCH (a:point), (b:point) WHERE a.name = 'A' AND b.name = 'B' CREATE (a)-[r:path {length: 2, refuge: 'Baita Colle Doro', time: 20, diff: 'medium' }]-> (b) RETURN a, b")
 
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (b:point), (c:point) WHERE b.name = 'B' AND c.name = 'C' CREATE (b)-[r:path {length: 1}]-> (c) RETURN b, c")
+            result = session.run("MATCH (b:point), (c:point) WHERE b.name = 'B' AND c.name = 'C' CREATE (b)-[r:path {length: 1, refuge: '', time: 10, diff: 'easy'}]-> (c) RETURN b, c")
     
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (d:point), (c:point) WHERE d.name = 'D' AND c.name = 'C' CREATE (d)-[r:path {length: 5}]-> (c) RETURN d, c")
+            result = session.run("MATCH (c:point), (d:point) WHERE c.name = 'C' AND d.name = 'D' CREATE (c)-[r:path {length: 5, refuge: '', time: 60, diff: 'hard'}]-> (d) RETURN c, d")
 
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (d:point), (a:point) WHERE d.name = 'D' AND a.name = 'A' CREATE (d)-[r:path {length: 1}]-> (a) RETURN d, a")
+            result = session.run("MATCH (d:point), (a:point) WHERE d.name = 'D' AND a.name = 'A' CREATE (d)-[r:path {length: 1, refuge: '', time: 10, diff: 'easy'}]-> (a) RETURN d, a")
     
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (d:point), (e:point) WHERE d.name = 'D' AND e.name = 'E' CREATE (d)-[r:path {length: 1.5}]-> (e) RETURN d, e")
+            result = session.run("MATCH (d:point), (e:point) WHERE d.name = 'D' AND e.name = 'E' CREATE (d)-[r:path {length: 1.5,  refuge: '', time: 15, diff: 'easy'}]-> (e) RETURN d, e")
              
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (e:point), (f:point) WHERE e.name = 'E' AND f.name = 'F' CREATE (e)-[r:path {length: 0.5}]-> (f) RETURN e, f")
+            result = session.run("MATCH (e:point), (f:point) WHERE e.name = 'E' AND f.name = 'F' CREATE (e)-[r:path {length: 0.5,  refuge: '', time: 5, diff: 'easy'}]-> (f) RETURN e, f")
 
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (f:point), (a:point) WHERE f.name = 'F' AND a.name = 'A' CREATE (f)-[r:path {length: 2}]-> (a) RETURN f, a")
+            result = session.run("MATCH (f:point), (a:point) WHERE f.name = 'F' AND a.name = 'A' CREATE (f)-[r:path {length: 2, refuge: '', time: 25, diff: 'medium'}]-> (a) RETURN f, a")
 
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (d:point), (a:point) WHERE d.name = 'D' AND a.name = 'A' CREATE (d)-[r:path {length: 1}]-> (a) RETURN d, a")
+            result = session.run("MATCH (a:point), (d:point) WHERE a.name = 'A' AND d.name = 'D' CREATE (a)-[r:path {length: 1, refuge: '', time: 10, diff: 'easy'}]-> (d) RETURN a, d")
 
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (f:point), (g:point) WHERE f.name = 'F' AND g.name = 'G' CREATE (f)-[r:path {length: 2.5}]-> (g) RETURN f, g")
+            result = session.run("MATCH (e:point), (g:point) WHERE e.name = 'E' AND g.name = 'G' CREATE (e)-[r:path {length: 4, refuge: 'Contrà Culpi', time: 45, diff: 'hard'}]-> (g) RETURN e, g")
 
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (e:point), (g:point) WHERE e.name = 'E' AND g.name = 'G' CREATE (e)-[r:path {length: 4}]-> (g) RETURN e, g")
+            result = session.run("MATCH (f:point), (g:point) WHERE f.name = 'F' AND g.name = 'G' CREATE (f)-[r:path {length: 2.5,  refuge: 'Contrà Logati di Nogarole', time: 30, diff: 'medium'}]-> (g) RETURN f, g")
 
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (f:point), (g:point) WHERE f.name = 'F' AND g.name = 'G' CREATE (f)-[r:path {length: 2.5}]-> (g) RETURN f, g")
+            result = session.run("MATCH (a:point), (g:point) WHERE a.name = 'A' AND g.name = 'G' CREATE (a)-[r:path {length: 2.5,  refuge: 'Anfiteatro Selva', time: 30, diff: 'medium'}]-> (g) RETURN a, g")
 
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            result = session.run("MATCH (a:point), (g:point) WHERE a.name = 'A' AND g.name = 'G' CREATE (a)-[r:path {length: 2.5}]-> (g) RETURN a, g")
-
+            result = session.run("MATCH (g:point), (e:point) WHERE g.name = 'G' AND e.name = 'E' CREATE (g)-[r:path {length: 4,  refuge: 'Contrà Culpi', time: 45, diff: 'hard'}]-> (e) RETURN g, e")
     return 0
 
-
+BENVENUTO = '''
+Benvenuto su PathFinder!
+0. Per uscire del menù
+1. Per visualizzare le informazioni dei punti d'interesse
+2. Per visualizzare i rifugi
+3. Per calcolare il tuo percorso
+'''
+while True:
+    print(BENVENUTO)
+    selezione = int(input("Seleziona un'opzione: "))
+    if selezione == 0:
+        break
+    elif selezione == 1:
+        print("")
+    elif selezione == 2:
+        print("")
+    elif selezione == 3:
+        print("")
 
 #test
 
