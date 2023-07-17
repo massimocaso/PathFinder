@@ -88,7 +88,12 @@ def ping(uri, username, password):
     except Exception as e:
         print(f"Errore: \n {e}")
 
-# Funzione per visualizzare i punti presenti nell'area scelta
+#-----------------------------------------------------------------------------
+# Concentrarsi si queste due funzioni
+''' 
+    Funzione per visualizzare i punti presenti nell'area scelta
+    Recuperare tutti i punti che sono presenti nell'area scelta
+'''
 def vis_area():
 
     return 0
@@ -98,6 +103,9 @@ def vis_area():
         -Inserire partenza e destinazione
         >Presentare i percorsi disponibili in ordine di durata totale
         >Presentare i percorsi disponibili in ordine di difficoltà
+        >Se adatto alla bici
+        >Tempo di percorrenza
+        >Difficoltà
 '''
 def calcolo_percorso():
 
