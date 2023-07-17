@@ -2,8 +2,7 @@ from neo4j import GraphDatabase
 import nodes
 
 controllo = False
-# Per la creazione dei nodi e delle relazioni 
-#nodes.create_nodes()
+
 '''
 Requisiti:
     -Rappresentare una zona di montagna e tutti i sentieri disponibili:
@@ -75,6 +74,8 @@ uri = "neo4j+ssc://01ba88fb.databases.neo4j.io"
 username = "neo4j"
 password = "buVwt6t2NoI2ztlIwcCcNaKWBDXwf6ZLzpq_jDAZDWo"
 
+# Per la creazione dei nodi e delle relazioni 
+nodes.create_nodes(uri, username, password)
 
 def ping(uri, username, password):
     try:
