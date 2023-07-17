@@ -1,6 +1,8 @@
 from neo4j import GraphDatabase
 import nodes
 
+controllo = False
+# Per la creazione dei nodi e delle relazioni 
 #nodes.create_nodes()
 '''
 Requisiti:
@@ -86,10 +88,20 @@ def ping(uri, username, password):
     except Exception as e:
         print(f"Errore: \n {e}")
 
-def scelta_area():
+# Funzione per visualizzare i punti presenti nell'area scelta
+def vis_area():
 
     return 0
 
+
+'''Funzione per il calcolo del percorso 
+        -Inserire partenza e destinazione
+        >Presentare i percorsi disponibili in ordine di durata totale
+        >Presentare i percorsi disponibili in ordine di difficoltà
+'''
+def calcolo_percorso():
+
+    return 0
 
 # ----------------------------------------------------------------
 # Funzione per visualizzare le informazioni dei vari punti
@@ -116,28 +128,72 @@ def vis_refuge():
 
     return 0
 
+
 BENVENUTO = '''
+--------------------------------------------------------------------------
 Benvenuto su PathFinder!
 0. Per uscire del menù
 1. Per visualizzare le informazioni dei punti d'interesse
-2. Per visualizzare i rifugi
-3. Per calcolare il tuo percorso
+2. Per visualizzare le informazioni delle Aree
+3. Per visualizzare i rifugi
+4. Per calcolare il tuo percorso
+--------------------------------------------------------------------------
 '''
 while True:
-    print(BENVENUTO)
-    selezione = int(input("Seleziona un'opzione: "))
-    if selezione == 0:
-        break
-    elif selezione == 1:
-        point_name = input('''
-        Inserisci il punto che vuoi visualizzare
-        Punti disponibili [A-B-C-D-E-F-G]
-        ''').upper()
-        vis_point(point_name)
-    elif selezione == 2:
-        print("")
-    elif selezione == 3:
-        print("")
+    try:
+        print(BENVENUTO)
+        selezione = int(input("Seleziona un'opzione: "))
+        if selezione == 0:
+            break
+        elif selezione == 1:
+            point_name = ""
+            while True:
+                try:
+                    point_name = input('''
+                    Inserisci il punto che vuoi visualizzare
+                    Punti disponibili [A-B-C-D-E-F-G]
+                    ''').upper()
 
+                    if point_name in ["A", "B", "C", "D", "E", "F", "G"]:
+                        vis_point(point_name)
+                        controllo = True
+                    else:
+                        raise ValueError
+                except ValueError:
+                    print("Devi inserire un area tra quelle presenti")
+                if controllo == True:
+                    break
+
+        elif selezione == 2: 
+            area = 0
+            while True:
+                try:
+                    area = int(input('''
+                    Inserisci l'area da visualizzare [1-2-3-4-5]
+                    Aree disponibili:
+                    1. Area locale n°1 MonteFaldo Selva
+                    2. Area locale n°2 Monte Sesoli
+                    3. Area locale n°3 Monte Crocetta
+                    4. Area locale n°4 Valle dell'Arpega
+                    5. Area locane n°5 Tre Valli
+                    '''))
+
+                    if area in [1,2,3,4,5]:
+                        vis_area(area)
+                        controllo = True
+                    else:
+                        raise ValueError
+                except ValueError:
+                    print("Valore inserito non valido")
+                if controllo == True:
+                    break
+        elif selezione == 3:
+            print("")
+        elif selezione == 4:
+            print("")
+        else:
+            raise ValueError
+    except ValueError:
+        print("Valore inserito non valido")
 #test
 
