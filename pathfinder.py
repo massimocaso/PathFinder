@@ -97,160 +97,80 @@ def scelta_area():
     return 0
 
 #MATCH (n:Node)-[r:Studente]->() DELETE r, n
-def create_node(uri, username, password):
+def create_nodes(uri, username, password):
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            node_data = {
-                "name": "A",
-                "areas": [1,2,3,4,5,6],
-                "picnic": True
-            }
-            
+            # Creazione dei nodi
+            nodes = [
+                {"name": "A", "areas": [1, 2, 3, 4, 5], "picnic": True},
+                {"name": "B", "areas": [1, 6], "picnic": True},
+                {"name": "C", "areas": [1, 2, 6], "picnic": False},
+                {"name": "D", "areas": [1, 2, 3, 4, 6], "picnic": False},
+                {"name": "E", "areas": [3, 4, 6], "picnic": False},
+                {"name": "F", "areas": [3, 4, 5], "picnic": False},
+                {"name": "G", "areas": [4, 5, 6], "picnic": False}
+            ]
+
             create_query = """
-            CREATE (a:point {name: $name, areas: $areas, picnic: $picnic})
+            CREATE (p:point {name: $name, areas: $areas, picnic: $picnic})
             """
+
+            for node_data in nodes:
+                session.run(create_query, **node_data)
             
-            session.run(create_query, **node_data)
-            print("Nodo creato con successo.")
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            node_data = {
-                "name": "B",
-                "areas": [1,6],
-                "picnic": True
-            }
-            
-            create_query = """
-            CREATE (b:point {name: $name, areas: $areas, picnic: $picnic})
+            print("Nodi creati con successo.")
+
+            # Creazione delle relazioni
+            relationships = [
+                ("A", "B", {"length": 2, "refuge": "Baita Colle Doro", "time": 20, "diff": "medium"}),
+                ("B", "C", {"length": 1, "refuge": "", "time": 10, "diff": "easy"}),
+                ("C", "D", {"length": 5, "refuge": "", "time": 60, "diff": "hard"}),
+                ("D", "A", {"length": 1, "refuge": "", "time": 10, "diff": "easy"}),
+                ("D", "E", {"length": 1.5, "refuge": "", "time": 15, "diff": "easy"}),
+                ("E", "F", {"length": 0.5, "refuge": "", "time": 5, "diff": "easy"}),
+                ("F", "A", {"length": 2, "refuge": "", "time": 25, "diff": "medium"}),
+                ("A", "D", {"length": 1, "refuge": "", "time": 10, "diff": "easy"}),
+                ("E", "G", {"length": 4, "refuge": "Contrà Culpi", "time": 45, "diff": "hard"}),
+                ("F", "G", {"length": 2.5, "refuge": "Contrà Logati di Nogarole", "time": 30, "diff": "medium"}),
+                ("A", "G", {"length": 2.5, "refuge": "Anfiteatro Selva", "time": 30, "diff": "medium"}),
+                ("G", "E", {"length": 4, "refuge": "Contrà Culpi", "time": 45, "diff": "hard"})
+            ]
+
+            create_relationship_query = """
+            MATCH (a:point {name: $start}), (b:point {name: $end})
+            CREATE (a)-[r:path $props]->(b)
             """
+
+            for start, end, props in relationships:
+                session.run(create_relationship_query, start=start, end=end, props=props)
             
-            session.run(create_query, **node_data)
-            print("Nodo creato con successo.")
+            print("Relazioni create con successo.")
 
+
+create_nodes(uri, username, password)
+
+
+# ----------------------------------------------------------------
+# Funzione per visualizzare le informazioni dei vari punti
+def vis_point(point_name):
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            node_data = {
-                "name": "C",
-                "areas": [1,2,6],
-                "picnic": False
-            }
+            query = "MATCH (p:point {name: $pointName}) RETURN p"
+            result = session.run(query, pointName=point_name)
             
-            create_query = """
-            CREATE (c:point {name: $name, areas: $areas, picnic: $picnic})
-            """
+            if result.peek() is None:
+                print(f"Nessun punto trovato con il nome '{point_name}'")
+                return
             
-            session.run(create_query, **node_data)
-            print("Nodo creato con successo.")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            node_data = {
-                "name": "D",
-                "areas": [1,2,3,4,6],
-                "picnic": False
-            }
-            
-            create_query = """
-            CREATE (d:point {name: $name, areas: $areas, picnic: $picnic})
-            """
-            
-            session.run(create_query, **node_data)
-            print("Nodo creato con successo.")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            node_data = {
-                "name": "E",
-                "areas": [3,4,6],
-                "picnic": False
-            }
-            
-            create_query = """
-            CREATE (e:point {name: $name, areas: $areas, picnic: $picnic})
-            """
-            
-            session.run(create_query, **node_data)
-            print("Nodo creato con successo.")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            node_data = {
-                "name": "F",
-                "areas": [3,4,5],
-                "picnic": False
-            }
-            
-            create_query = """
-            CREATE (f:point {name: $name, areas: $areas, picnic: $picnic})
-            """
-            
-            session.run(create_query, **node_data)
-            print("Nodo creato con successo.")    
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            node_data = {
-                "name": "G",
-                "areas": [4,5,6],
-                "picnic": False
-            }
-            
-            create_query = """
-            CREATE (g:point {name: $name, areas: $areas, picnic: $picnic})
-            """
-            
-            session.run(create_query, **node_data)
-            print("Nodo creato con successo.")   
-
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (a:point), (b:point) WHERE a.name = 'A' AND b.name = 'B' CREATE (a)-[r:path {length: 2, refuge: 'Baita Colle Doro', time: 20, diff: 'medium' }]-> (b) RETURN a, b")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (b:point), (c:point) WHERE b.name = 'B' AND c.name = 'C' CREATE (b)-[r:path {length: 1, refuge: '', time: 10, diff: 'easy'}]-> (c) RETURN b, c")
-    
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (c:point), (d:point) WHERE c.name = 'C' AND d.name = 'D' CREATE (c)-[r:path {length: 5, refuge: '', time: 60, diff: 'hard'}]-> (d) RETURN c, d")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (d:point), (a:point) WHERE d.name = 'D' AND a.name = 'A' CREATE (d)-[r:path {length: 1, refuge: '', time: 10, diff: 'easy'}]-> (a) RETURN d, a")
-    
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (d:point), (e:point) WHERE d.name = 'D' AND e.name = 'E' CREATE (d)-[r:path {length: 1.5,  refuge: '', time: 15, diff: 'easy'}]-> (e) RETURN d, e")
-             
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (e:point), (f:point) WHERE e.name = 'E' AND f.name = 'F' CREATE (e)-[r:path {length: 0.5,  refuge: '', time: 5, diff: 'easy'}]-> (f) RETURN e, f")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (f:point), (a:point) WHERE f.name = 'F' AND a.name = 'A' CREATE (f)-[r:path {length: 2, refuge: '', time: 25, diff: 'medium'}]-> (a) RETURN f, a")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (a:point), (d:point) WHERE a.name = 'A' AND d.name = 'D' CREATE (a)-[r:path {length: 1, refuge: '', time: 10, diff: 'easy'}]-> (d) RETURN a, d")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (e:point), (g:point) WHERE e.name = 'E' AND g.name = 'G' CREATE (e)-[r:path {length: 4, refuge: 'Contrà Culpi', time: 45, diff: 'hard'}]-> (g) RETURN e, g")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (f:point), (g:point) WHERE f.name = 'F' AND g.name = 'G' CREATE (f)-[r:path {length: 2.5,  refuge: 'Contrà Logati di Nogarole', time: 30, diff: 'medium'}]-> (g) RETURN f, g")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (a:point), (g:point) WHERE a.name = 'A' AND g.name = 'G' CREATE (a)-[r:path {length: 2.5,  refuge: 'Anfiteatro Selva', time: 30, diff: 'medium'}]-> (g) RETURN a, g")
-
-    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
-        with driver.session() as session:
-            result = session.run("MATCH (g:point), (e:point) WHERE g.name = 'G' AND e.name = 'E' CREATE (g)-[r:path {length: 4,  refuge: 'Contrà Culpi', time: 45, diff: 'hard'}]-> (e) RETURN g, e")
-    return 0
+            for record in result:
+                node = record["p"]
+                print(f"Name: {node['name']}")
+                print(f"Questo punto è presente nelle seguenti aree: {node['areas']}")
+                if node['picnic']:
+                    print("È presente un'area picnic")
+                else:
+                    print("Non è presente un'area picnic")
+  
 
 BENVENUTO = '''
 Benvenuto su PathFinder!
@@ -265,7 +185,11 @@ while True:
     if selezione == 0:
         break
     elif selezione == 1:
-        print("")
+        point_name = input('''
+        Inserisci il punto che vuoi visualizzare
+        Punti disponibili [A-B-C-D-E-F-G]
+        ''').upper()
+        vis_point(point_name)
     elif selezione == 2:
         print("")
     elif selezione == 3:
@@ -273,4 +197,3 @@ while True:
 
 #test
 
-create_node(uri,username,password)
