@@ -111,7 +111,10 @@ def vis_point(point_name):
                     print("È presente un'area picnic")
                 else:
                     print("Non è presente un'area picnic")
-  
+
+def vis_refuge():
+
+    return 0
 
 BENVENUTO = '''
 Benvenuto su PathFinder!
