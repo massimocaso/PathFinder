@@ -1,8 +1,6 @@
 from neo4j import GraphDatabase
 import nodes
 
-controllo = False
-
 '''
 Requisiti:
     -Rappresentare una zona di montagna e tutti i sentieri disponibili:
@@ -74,7 +72,7 @@ uri = "neo4j+ssc://01ba88fb.databases.neo4j.io"
 username = "neo4j"
 password = "buVwt6t2NoI2ztlIwcCcNaKWBDXwf6ZLzpq_jDAZDWo"
 
-# Per la creazione dei nodi e delle relazioni 
+# Per la creazione dei nodi e delle relazioni
 nodes.create_nodes(uri, username, password)
 
 def ping(uri, username, password):
@@ -95,9 +93,23 @@ def ping(uri, username, password):
     Funzione per visualizzare i punti presenti nell'area scelta
     Recuperare tutti i punti che sono presenti nell'area scelta
 '''
-def vis_area():
+def vis_area(area):
+    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
+        with driver.session() as session:
+            query = f'''MATCH (n)-[r]-(m) 
+            WHERE {area} IN n.areas AND {area} IN m.areas
+            RETURN n, r, m'''
+            result = session.run(query)
 
-    return 0
+            if result.peek() is None:
+                print(f"L\'area '{area}' non esiste.")
+                return
+            
+            for record in result:
+                node = record["n"]
+                relationship = record["r"]
+                connected_node = record["m"]
+                print(node, relationship, connected_node)
 
 
 '''Funzione per il calcolo del percorso 
@@ -128,10 +140,7 @@ def vis_point(point_name):
                 node = record["p"]
                 print(f"Name: {node['name']}")
                 print(f"Questo punto è presente nelle seguenti aree: {node['areas']}")
-                if node['picnic']:
-                    print("È presente un'area picnic")
-                else:
-                    print("Non è presente un'area picnic")
+                print("È presente un'area picnic") if node['picnic'] else print("Non è presente un'area picnic")
 
 def vis_refuge():
 
@@ -149,10 +158,12 @@ Benvenuto su PathFinder!
 --------------------------------------------------------------------------
 '''
 while True:
+    controllo = False
     try:
         print(BENVENUTO)
         selezione = int(input("Seleziona un'opzione: "))
         if selezione == 0:
+            print("Bye bye!")
             break
         elif selezione == 1:
             point_name = ""
@@ -170,7 +181,7 @@ while True:
                         raise ValueError
                 except ValueError:
                     print("Devi inserire un area tra quelle presenti")
-                if controllo == True:
+                if controllo:
                     break
 
         elif selezione == 2: 
@@ -187,14 +198,14 @@ while True:
                     5. Area locane n°5 Tre Valli
                     '''))
 
-                    if area in [1,2,3,4,5]:
+                    if area in range(1, 6): # [1, 2, 3, 4, 5]
                         vis_area(area)
                         controllo = True
                     else:
                         raise ValueError
                 except ValueError:
                     print("Valore inserito non valido")
-                if controllo == True:
+                if controllo:
                     break
         elif selezione == 3:
             print("")
@@ -203,6 +214,4 @@ while True:
         else:
             raise ValueError
     except ValueError:
-        print("Valore inserito non valido")
-#test
-
+        print("Valore inserito non valido!")
