@@ -1,5 +1,6 @@
 from neo4j import GraphDatabase
 from nodes import create_nodes
+from menustring import BENVENUTO, AREA_INPUT, POINT_INPUT
 
 '''
 Requisiti:
@@ -107,7 +108,7 @@ def vis_area(area):
             result = session.run(query)
 
             if result.peek() is None:
-                print(f"L\'area '{area}' non esiste.")
+                print(f"L'area '{area}' non esiste.")
                 return
             
             for record in result:
@@ -152,16 +153,6 @@ def vis_refuge():
     return 0
 
 if __name__ == "__main__":
-    BENVENUTO = '''
-    --------------------------------------------------------------------------
-    Benvenuto su PathFinder!
-    0. Per uscire del menù
-    1. Per visualizzare le informazioni dei punti d'interesse
-    2. Per visualizzare le informazioni delle Aree
-    3. Per visualizzare i rifugi
-    4. Per calcolare il tuo percorso
-    --------------------------------------------------------------------------
-    '''
     while True:
         controllo = False
         try:
@@ -174,10 +165,7 @@ if __name__ == "__main__":
                 point_name = ""
                 while True:
                     try:
-                        point_name = input('''
-                        Inserisci il punto che vuoi visualizzare
-                        Punti disponibili [A-B-C-D-E-F-G]
-                        ''').upper()
+                        point_name = input(POINT_INPUT).upper()
 
                         if point_name in ["A", "B", "C", "D", "E", "F", "G"]:
                             vis_point(point_name)
@@ -193,15 +181,7 @@ if __name__ == "__main__":
                 area = 0
                 while True:
                     try:
-                        area = int(input('''
-                        Inserisci l'area da visualizzare [1-2-3-4-5]
-                        Aree disponibili:
-                        1. Area locale n°1 MonteFaldo Selva
-                        2. Area locale n°2 Monte Sesoli
-                        3. Area locale n°3 Monte Crocetta
-                        4. Area locale n°4 Valle dell'Arpega
-                        5. Area locane n°5 Tre Valli
-                        '''))
+                        area = int(input(AREA_INPUT))
 
                         if area in range(1, 6): # [1, 2, 3, 4, 5]
                             vis_area(area)
