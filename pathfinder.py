@@ -1,5 +1,5 @@
 from neo4j import GraphDatabase
-import nodes
+from nodes import create_nodes
 
 '''
 Requisiti:
@@ -72,20 +72,25 @@ uri = "neo4j+ssc://01ba88fb.databases.neo4j.io"
 username = "neo4j"
 password = "buVwt6t2NoI2ztlIwcCcNaKWBDXwf6ZLzpq_jDAZDWo"
 
-# Per la creazione dei nodi e delle relazioni
-nodes.create_nodes(uri, username, password)
-
-def ping(uri, username, password):
-    try:
-        driver = GraphDatabase.driver(uri, auth=(username, password))
+# Ping del database
+try:
+    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
             result = session.run("RETURN 1")
             if result.single()[0] == 1:
                 print("Connessione effettuata!")
             else:
                 print("Connessione fallita!")
-    except Exception as e:
-        print(f"Errore: \n {e}")
+except Exception as e:
+    print(f"Errore: \n {e}")
+
+# Reset del contenuto del database
+with GraphDatabase.driver(uri, auth=(username, password)) as driver:
+    with driver.session() as session:
+        db_is_not_empty = session.run("MATCH (n) RETURN COUNT(n) > 0 AS isNotEmpty").single()["isNotEmpty"]
+        if (not db_is_not_empty):
+            session.run("MATCH (n) DETACH DELETE n")
+            create_nodes(uri, username, password)
 
 #-----------------------------------------------------------------------------
 # Concentrarsi si queste due funzioni
@@ -146,72 +151,72 @@ def vis_refuge():
 
     return 0
 
+if __name__ == "__main__":
+    BENVENUTO = '''
+    --------------------------------------------------------------------------
+    Benvenuto su PathFinder!
+    0. Per uscire del menù
+    1. Per visualizzare le informazioni dei punti d'interesse
+    2. Per visualizzare le informazioni delle Aree
+    3. Per visualizzare i rifugi
+    4. Per calcolare il tuo percorso
+    --------------------------------------------------------------------------
+    '''
+    while True:
+        controllo = False
+        try:
+            print(BENVENUTO)
+            selezione = int(input("Seleziona un'opzione: "))
+            if selezione == 0:
+                print("Bye bye!")
+                break
+            elif selezione == 1:
+                point_name = ""
+                while True:
+                    try:
+                        point_name = input('''
+                        Inserisci il punto che vuoi visualizzare
+                        Punti disponibili [A-B-C-D-E-F-G]
+                        ''').upper()
 
-BENVENUTO = '''
---------------------------------------------------------------------------
-Benvenuto su PathFinder!
-0. Per uscire del menù
-1. Per visualizzare le informazioni dei punti d'interesse
-2. Per visualizzare le informazioni delle Aree
-3. Per visualizzare i rifugi
-4. Per calcolare il tuo percorso
---------------------------------------------------------------------------
-'''
-while True:
-    controllo = False
-    try:
-        print(BENVENUTO)
-        selezione = int(input("Seleziona un'opzione: "))
-        if selezione == 0:
-            print("Bye bye!")
-            break
-        elif selezione == 1:
-            point_name = ""
-            while True:
-                try:
-                    point_name = input('''
-                    Inserisci il punto che vuoi visualizzare
-                    Punti disponibili [A-B-C-D-E-F-G]
-                    ''').upper()
+                        if point_name in ["A", "B", "C", "D", "E", "F", "G"]:
+                            vis_point(point_name)
+                            controllo = True
+                        else:
+                            raise ValueError
+                    except ValueError:
+                        print("Devi inserire un area tra quelle presenti")
+                    if controllo:
+                        break
 
-                    if point_name in ["A", "B", "C", "D", "E", "F", "G"]:
-                        vis_point(point_name)
-                        controllo = True
-                    else:
-                        raise ValueError
-                except ValueError:
-                    print("Devi inserire un area tra quelle presenti")
-                if controllo:
-                    break
+            elif selezione == 2: 
+                area = 0
+                while True:
+                    try:
+                        area = int(input('''
+                        Inserisci l'area da visualizzare [1-2-3-4-5]
+                        Aree disponibili:
+                        1. Area locale n°1 MonteFaldo Selva
+                        2. Area locale n°2 Monte Sesoli
+                        3. Area locale n°3 Monte Crocetta
+                        4. Area locale n°4 Valle dell'Arpega
+                        5. Area locane n°5 Tre Valli
+                        '''))
 
-        elif selezione == 2: 
-            area = 0
-            while True:
-                try:
-                    area = int(input('''
-                    Inserisci l'area da visualizzare [1-2-3-4-5]
-                    Aree disponibili:
-                    1. Area locale n°1 MonteFaldo Selva
-                    2. Area locale n°2 Monte Sesoli
-                    3. Area locale n°3 Monte Crocetta
-                    4. Area locale n°4 Valle dell'Arpega
-                    5. Area locane n°5 Tre Valli
-                    '''))
-
-                    if area in range(1, 6): # [1, 2, 3, 4, 5]
-                        vis_area(area)
-                        controllo = True
-                    else:
-                        raise ValueError
-                except ValueError:
-                    print("Valore inserito non valido")
-                if controllo:
-                    break
-        elif selezione == 3:
-            print("")
-        elif selezione == 4:
-            print("")
-        else:
-            raise ValueError
-    except ValueError:
-        print("Valore inserito non valido!")
+                        if area in range(1, 6): # [1, 2, 3, 4, 5]
+                            vis_area(area)
+                            controllo = True
+                        else:
+                            raise ValueError
+                    except ValueError:
+                        print("Valore inserito non valido")
+                    if controllo:
+                        break
+            elif selezione == 3:
+                print("")
+            elif selezione == 4:
+                print("")
+            else:
+                raise ValueError
+        except ValueError:
+            print("Valore inserito non valido!")
