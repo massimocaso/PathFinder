@@ -1,6 +1,6 @@
 from neo4j import GraphDatabase
 from nodes import create_nodes
-from menustring import BENVENUTO, AREA_INPUT, POINT_INPUT
+from menustring import BENVENUTO, AREA_INPUT, POINT_INPUT, ORDER_INPUT
 
 '''
 Requisiti:
@@ -127,8 +127,77 @@ def vis_area(area):
         >Difficoltà
 '''
 def calcolo_percorso():
+    start_point = input("Inserire il punto di partenza (A, B, C, D, E, F, G): ").upper()
+    end_point = input("Inserire la destinazione (A, B, C, D, E, F, G): ").upper()
 
-    return 0
+    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
+        with driver.session() as session:
+            path = []
+            print(ORDER_INPUT)
+            selezione = int(input(""))
+            while True:
+                if selezione == 1:
+                    query = '''
+                    MATCH p = (start:point {name: $startPoint})-[*..3]-(end:point {name: $endPoint})
+                    WHERE ALL(n in nodes(p) WHERE size([node IN nodes(p) WHERE node.name = n.name]) <= 1)
+                    WITH p, 
+                        REDUCE(time = 0, rel in relationships(p) | time + COALESCE(rel.time, 0)) AS totalDuration
+                    ORDER BY totalDuration ASC
+                    RETURN p, totalDuration AS durata_percorso
+                    '''
+                    result = session.run(query, startPoint=start_point, endPoint=end_point)
+
+                    paths = []
+                    for record in result:
+                        path = record["p"]
+                        total_duration = record["durata_percorso"]
+                        paths.append((path, total_duration))
+
+                    if not paths:
+                        print(f"\nNon esistono percorsi tra '{start_point}' e '{end_point}'.")
+                        return
+
+                    paths.sort(key=lambda x: x[1] if x[1] is not None else float('inf'))
+
+                    print("\nPercorsi disponibili ordinati per durata totale:\n")
+                    for i, (path, total_duration) in enumerate(paths, start=1):
+                        print(f"Percorso {i}:")
+                        print(f"  Punto di partenza: {start_point}")
+                        print("  Punti intermedi:")
+                        for j, node in enumerate(path.nodes):
+                            if j == 0 or j == len(path.nodes) - 1:
+                                continue  # Salta il punto di partenza e destinazione
+                            print(f"    - {node['name']}")
+                        print(f"  Punto di destinazione: {end_point}")
+                        print(f"  Durata totale: {total_duration} minuti\n")
+                    break
+                elif selezione == 2:
+                    query = '''
+                    MATCH p = (start:point {name: $startPoint})-[*..3]-(end:point {name: $endPoint})
+                    WHERE ALL(n in nodes(p) WHERE size([node IN nodes(p) WHERE node.name = n.name]) <= 1)
+                    WITH p, 
+                        REDUCE(diff = null, rel in relationships(p) | CASE WHEN diff > COALESCE(rel.diff, 0) THEN diff ELSE COALESCE(rel.diff, 0) END) AS total_difficulty
+                    ORDER BY total_difficulty ASC
+                    RETURN p, total_difficulty AS difficoltà_totale
+                    '''
+                    result = session.run(query, startPoint=start_point, endPoint=end_point)
+
+                    print("\nPercorsi disponibili ordinati per difficoltà totale:\n")
+                    for i, record in enumerate(result, start=1):
+                        path = record["p"]
+                        total_difficulty = record["difficoltà_totale"]
+                        print(f"Percorso {i}:")
+                        print(f"  Punto di partenza: {start_point}")
+                        print("  Punti intermedi:")
+                        for j, node in enumerate(path.nodes):
+                            if j == 0 or j == len(path.nodes) - 1:
+                                continue  # Salta il punto di partenza e destinazione
+                            print(f"    - {node['name']}")
+                        print(f"  Punto di destinazione: {end_point}")
+                        print(f"  Difficoltà totale: {total_difficulty}\n")
+                    break
+                else:
+                    print("Opzione non valida")
 
 # ----------------------------------------------------------------
 # Funzione per visualizzare le informazioni dei vari punti
@@ -195,7 +264,7 @@ if __name__ == "__main__":
             elif selezione == 3:
                 print("")
             elif selezione == 4:
-                print("")
+                calcolo_percorso()
             else:
                 raise ValueError
         except ValueError:

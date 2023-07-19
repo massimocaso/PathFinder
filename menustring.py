@@ -25,3 +25,10 @@ POINT_INPUT = '''
 Inserisci il punto che vuoi visualizzare
 Punti disponibili [A-B-C-D-E-F-G]
 '''
+
+ORDER_INPUT = '''
+--------------------------------------------------------------------------
+Visualizza in ordine:
+1. Di durata crescente
+2. Di difficoltà crescente
+'''
