@@ -102,21 +102,58 @@ with GraphDatabase.driver(uri, auth=(username, password)) as driver:
 def vis_area(area):
     with GraphDatabase.driver(uri, auth=(username, password)) as driver:
         with driver.session() as session:
-            query = f'''MATCH (n)-[r]-(m) 
-            WHERE {area} IN n.areas AND {area} IN m.areas
-            RETURN n, r, m'''
-            result = session.run(query)
+            query = f'''
+            MATCH (n)-[r]-(m) 
+            WHERE $area IN n.areas AND $area IN m.areas
+            RETURN n, r, m
+            '''
+            result = session.run(query, area=area)
 
             if result.peek() is None:
                 print(f"L'area '{area}' non esiste.")
                 return
-            
+
+            nodes_info = {}
             for record in result:
                 node = record["n"]
                 relationship = record["r"]
                 connected_node = record["m"]
-                print(node, relationship, connected_node)
 
+                node_name = str(node['name'])
+                node_area = ", ".join(str(a) for a in node['areas'])
+                node_type = node.labels
+                node_length = node['length'] if "length" in node else None
+                node_picnic = node["picnic"] if "picnic" in node else None
+
+                if node_name not in nodes_info:
+                    nodes_info[node_name] = {
+                        "area": node_area,
+                        "length": node_length,
+                        "picnic": node_picnic,
+                        "paths": []
+                    }
+                path_info = f"{str(node['name'])} -> {str(connected_node['name'])} ({relationship['length']} km)"
+                nodes_info[node_name]["paths"].append(path_info)
+
+            print(f"\nPunti e percorsi nell'area '{area}':\n")
+            for node_name, info in nodes_info.items():
+                print(f"Nome: {node_name} ({info['area']})")
+                print(f"Tipo: {', '.join(info['type'])}")
+                if info['length'] is not None:
+                    print(f"Lunghezza: {info['length']} km")
+                if info['picnic'] is not None:
+                    if info['picnic']:
+                        print("Area Picnic: Presente")
+                    else:
+                        print("Area Picnic: Non presente")
+
+                if info['paths']:
+                    print("Percorsi:")
+                    for path_info in info['paths']:
+                        print(f"   {path_info}")
+                else:
+                    print("Nessun percorso disponibile.")
+                print()
 
 '''Funzione per il calcolo del percorso 
         -Inserire partenza e destinazione
