@@ -17,7 +17,7 @@ Aree disponibili:
 2. Area locale n°2 Monte Sesoli
 3. Area locale n°3 Monte Crocetta
 4. Area locale n°4 Valle dell'Arpega
-5. Area locane n°5 Tre Valli
+5. Area locale n°5 Tre Valli
 Area: '''
 
 POINT_INPUT = '''
