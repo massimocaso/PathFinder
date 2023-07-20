@@ -25,18 +25,18 @@ def create_nodes(uri, username, password):
 
             # Creazione delle relazioni
             relationships = [
-                ("A", "B", {"length": 2, "refuge": "Baita Colle Doro", "time": 20, "diff": "medium"}),
-                ("B", "C", {"length": 1, "time": 10, "diff": "easy"}),
-                ("C", "D", {"length": 5, "time": 60, "diff": "hard"}),
-                ("D", "A", {"length": 1, "time": 10, "diff": "easy"}),
-                ("D", "E", {"length": 1.5, "time": 15, "diff": "easy"}),
-                ("E", "F", {"length": 0.5, "time": 5, "diff": "easy"}),
-                ("F", "A", {"length": 2, "time": 25, "diff": "medium"}),
-                ("A", "D", {"length": 1, "time": 10, "diff": "easy"}),
-                ("E", "G", {"length": 4, "refuge": "Contrà Culpi", "time": 45, "diff": "hard"}),
-                ("F", "G", {"length": 2.5, "refuge": "Contrà Logati di Nogarole", "time": 30, "diff": "medium"}),
-                ("A", "G", {"length": 2.5, "refuge": "Anfiteatro Selva", "time": 30, "diff": "medium"}),
-                ("G", "E", {"length": 4, "refuge": "Contrà Culpi", "time": 45, "diff": "hard"})
+                ("A", "B", {"length": 2, "refuge": "Baita Colle Doro", "time": 20, "diff": "medium", "bike": True}),
+                ("B", "C", {"length": 1, "time": 10, "diff": "easy", "bike": True}),
+                ("C", "D", {"length": 5, "time": 60, "diff": "hard", "bike": False}),
+                ("D", "A", {"length": 1, "time": 10, "diff": "easy", "bike": True}),
+                ("D", "E", {"length": 1.5, "time": 15, "diff": "easy", "bike": True}),
+                ("E", "F", {"length": 0.5, "time": 5, "diff": "easy", "bike": True}),
+                ("F", "A", {"length": 2, "time": 25, "diff": "medium", "bike": True}),
+                ("A", "D", {"length": 1, "time": 10, "diff": "easy", "bike": True}),
+                ("E", "G", {"length": 4, "refuge": "Contrà Culpi", "time": 45, "diff": "hard", "bike": False}),
+                ("F", "G", {"length": 2.5, "refuge": "Contrà Logati di Nogarole", "time": 30, "diff": "medium", "bike": True}),
+                ("A", "G", {"length": 2.5, "refuge": "Anfiteatro Selva", "time": 30, "diff": "medium", "bike": True}),
+                ("G", "E", {"length": 4, "refuge": "Contrà Culpi", "time": 45, "diff": "hard", "bike": False})
             ]
 
             create_relationship_query = """

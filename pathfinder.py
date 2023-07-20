@@ -173,7 +173,7 @@ def calcolo_percorso():
                     break
                 elif selezione == 2:
                     query = '''
-                    MATCH p = (start:point {name: $startPoint})-[*..3]-(end:point {name: $endPoint})
+                    MATCH p = (start:point {name: $startPoint})-[*..3]->(end:point {name: $endPoint})
                     WHERE ALL(n in nodes(p) WHERE size([node IN nodes(p) WHERE node.name = n.name]) <= 1)
                     WITH p, 
                         REDUCE(diff = null, rel in relationships(p) | CASE WHEN diff > COALESCE(rel.diff, 0) THEN diff ELSE COALESCE(rel.diff, 0) END) AS total_difficulty
@@ -218,8 +218,17 @@ def vis_point(point_name):
                 print("È presente un'area picnic") if node['picnic'] else print("Non è presente un'area picnic")
 
 def vis_refuge():
-
-    return 0
+    with GraphDatabase.driver(uri, auth=(username, password)) as driver:
+            with driver.session() as session:
+                query = "MATCH (n1)-[r]->(n2) WHERE r.refuge IS NOT NULL RETURN n1, r, n2"
+                result = session.run(query)
+                
+                for record in result:
+                    rel = record["r"]
+                    start = record["n1"]
+                    finish = record["n2"]
+                    print(f"Nome: {rel['refuge']}")
+                    print(f"Si trova sul percorso tra {start['name']} e {finish['name']}\n")
 
 if __name__ == "__main__":
     while True:
@@ -262,7 +271,7 @@ if __name__ == "__main__":
                     if controllo:
                         break
             elif selezione == 3:
-                print("")
+                vis_refuge()
             elif selezione == 4:
                 calcolo_percorso()
             else:
