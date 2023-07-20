@@ -10,4 +10,6 @@
 
 ## Dipendenze locali
 - nodes.py
+    - Contiene la generazione dei nodi e relazioni del DB
 - menustring.py
+    - Contiene tutte le stringhe che vengono visualizzate nel menù CLI
